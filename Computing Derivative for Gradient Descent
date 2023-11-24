@@ -1,0 +1,46 @@
+function [riskderivative,errorsignalsquared] = computederivative(thedata,theta)
+    
+    % Compute Predicted Responses 
+    % The ith column of "predictedresponses" is the 3-dimensional
+    % response vector generated from the ith column of the 
+    % matrix "inputpatterns". 
+    [nrstimuli,nrdatacolumns] = size(thedata);
+    thedataTranspose = thedata';
+    desiredresponses = thedataTranspose(1:3,:);
+    [nroutputunits,nrstimuli] = size(desiredresponses);
+    inputpatterns = thedataTranspose(4:nrdatacolumns,:);
+    [nrinputunits,nrstimuli] = size(inputpatterns);
+    wmatrix = (reshape(theta,nrinputunits,nroutputunits))';
+    predictedresponses = wmatrix*inputpatterns;
+    
+    % Compute the "errorsignalsquared matrix" defined such that
+    % the element in row k and column i of this matrix is called
+    % "cik" which is equal to the square of the error signal
+    % produced by the kth output unit by the ith input pattern.
+    % The error signal for the kth output unit is defined as the "desired response"
+    % of the kth output unit minus the "predicted response" of the kth output unit
+    % for the ith input pattern.
+    errorsignal = desiredresponses - predictedresponses; 
+    errorsignalsquared = errorsignal .* errorsignal;  
+    
+    sumriskderivative = zeros(nrinputunits*nroutputunits,1);
+    for i = 1:nrstimuli,
+        gradcimatrix = zeros(nroutputunits,nrinputunits);
+        for k = 1:nroutputunits,          
+            % Compute the derivative of
+            % cik with respect to the kth row of "wmatrix". Derive your answer 
+            % with a pencil and paper before you start programming. 
+            % The answer is just 1 line of MATLAB code.
+            % Note "gradcimatrix(k,:)" is the derivative of "cik" with respect to the
+            % kth row of "wmatrix"
+            yik = desiredresponses(k,i);
+            yikpredict = predictedresponses(k,i);
+             gradcimatrix(k,:) = 2*(yikpredict-yik)*inputpatterns(:,i)';% STUDENT FIX THIS MATLAB LINE OF CODE
+        end;
+        gradcimatrixTranspose = gradcimatrix';
+        gradcivector = gradcimatrixTranspose(:);
+        sumriskderivative = sumriskderivative + gradcivector;
+    end;
+    
+    % Compute the average derivative
+    riskderivative = (1/nrstimuli)*sumriskderivative;
