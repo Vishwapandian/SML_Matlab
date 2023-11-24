@@ -1,0 +1,19 @@
+function islocalminimizer = checklocalminimizer(thegradient,thehessian,myepsilon,rmax)
+islocalminimizer = 0;
+% STEP 1: Check if parameter estimate is a critical point.
+gradmax = max(abs(thegradient)); % STUDENT FIX THIS CALCULATION
+if gradmax < myepsilon,
+%  STEP 2: Check if critical point is a strict local minimizer
+   eigvals = eig(thehessian);
+   largesteigval = max(eigvals);
+   smallesteigval = min(eigvals);
+   % STEP 3: Check if matrix is positive definite (numerical check)
+   if (largesteigval > myepsilon) & (smallesteigval > myepsilon), % STUDENT FIX THIS IF STATEMENT
+      % STEP 4: Check Condition Number
+       conditionnumber = largesteigval/smallesteigval; % STUDENT FIX THIS CALCULATION
+        if conditionnumber < rmax,
+            islocalminimizer = 1;
+        end; % end of if statement
+   end; % end of if statement
+end; % end of if statement      
+end
