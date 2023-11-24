@@ -1,0 +1,17 @@
+function risk = empiricalrisk(W, lambda, smatrix)
+% INPUTS:
+% The first column of "smatrix" is the first input pattern vector.
+% The second column of "smatrix" is the second input pattern vector.
+% and so on. the matrix "smatrix" is the "term by document" matrix.
+%
+% The constant "lambda" is the regularization constant.
+% The matrix "W" contains the free parameters of the learning machine.
+[inputpatterndim,nrinputpatterns] = size(smatrix);
+lambdaterm = sum(sum(W.*W));
+sumerrorsquared = 0;
+for i = 1:nrinputpatterns,
+    errori = smatrix(:,i) - W*smatrix(:,i); % student fix calculation of predicted error signal
+    errorisquared = sum(errori.*errori);
+    sumerrorsquared = sumerrorsquared + errorisquared;
+end;
+risk = (sumerrorsquared / nrinputpatterns) + (lambda*lambdaterm); % Student fix calculation of "risk"
