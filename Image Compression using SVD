@@ -1,0 +1,31 @@
+function [Sdiagnew,Q] = compressimage(ranknewimage)
+% ranknewimage = number of left and right eigenvectors to use in reconstruction
+    
+% Load Image Data
+imagefilename = 'ngc6543a.jpg'
+imagedata = imread(imagefilename);
+grayimagedata = double(rgb2gray(imagedata)); % Convert To Gray Scale Image represented by matrix
+[imagerowdim,imagecoldim] = size(grayimagedata);
+
+ % Do Singular Value Decomposition
+[U,S,V] = svd(grayimagedata,'econ');
+[Urowdim,Ucoldim] = size(U);
+[Vrowdim,Vcoldim] = size(V);
+Srevised = S;
+[Srowdim,Scoldim] = size(Srevised);
+ranknewimagep1 = ranknewimage + 1; 
+for k = ranknewimagep1:Scoldim, % Student fix to make rank of compressed image equal to "ranknewimage"
+    Srevised(k,k) = 0;
+end;
+Q = Srevised*V'; % Student Compute Q matrix so that compressed image is generated
+compressedimage = U*Q;
+Sdiagnew = diag(Srevised);
+    
+% Plot results
+makeimagedisplay(imagedata,grayimagedata,compressedimage);
+
+% Display Image Compression Information
+totalnumbersoriginal = imagerowdim*imagecoldim;
+totalnumbersrevised = ranknewimage + ranknewimage*Ucoldim  + ranknewimage*Vcoldim;
+disp(['Original image requires ',num2str(totalnumbersoriginal),' numbers for storage.']);
+disp(['New image requires ',num2str(totalnumbersrevised),' numbers for storage.']);
